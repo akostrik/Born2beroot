@@ -72,53 +72,51 @@ $ sudo reboot
 $ hostname akostrik43 поменять временно
 * /etc/hostname
 
-Strong password policy :
-pam = pluggable authentification method
+pam = pluggable authentification method, a flexible authentication mechanism used by the application software
+1) Normal Unix authentication pam_unix under PAM (/etc/passwd /etc/shadow /etc/group)
+2) Strong password policy :
 $ sudo apt-get install libpam-pwquality							installing password quality checking library
 /etc/pam.d/common-password:
-password [success=2 default=ignore] pam_unix.so obscure sha512 minlen=10
-password requisite pam_pwquality.so retry=3 lcredit =-1 ucredit=-1 dcredit=-1 maxrepeat=3 usercheck=0 difok=7 enforce_for_root
-// dcredit=-1 credit=-1 credit=-1 contain an uppercase letter, a lowercase letter, and a number
-// maxrepeat=3 pas plus de 3 caracteres consecutifs
-// usercheck=1 ne doit pas contenir le nom de l'utilisateur
-// difok=7 <=7 characters that are not part of the former password 
-// enforce_for_root																apply to the root password
-// inclass=3 ?
-$ sudo reboot
+  -> password requisite pam_pwquality.so retry=3 lcredit =-1 ucredit=-1 dcredit=-1 maxrepeat=3 usercheck=0 difok=7 enforce_for_root
+    // basic checks
+    // dcredit=-1 credit=-1 credit=-1 contain an uppercase letter, a lowercase letter, and a number
+    // maxrepeat=3 pas plus de 3 caracteres consecutifs
+    // usercheck=1 ne doit pas contenir le nom de l'utilisateur
+    // difok=7 <=7 characters that are not part of the former password 
+    // enforce_for_root															apply to the root password
+    // inclass=3 ?
+  -> password [success=2 default=ignore] pam_unix.so obscure sha512 minlen=10
+    // checking users password, default = not permit the user access to a service if their official password is blank
+  -> password required pam_deny.so
+  -> password required pam_permit.so
 /etc/login.defs PASS_MAX_DAYS 30j										expire tous les 30j, 2j minimum pour modifier, un avertissement 7j
 /etc/pam.d/passwd ?
+$ sudo reboot
 
 Installer, configurer sudo 
-3 essais pour sudo maximum
-a custom message pour un mauvais mdp avec sudo
-chaque action avec sudo est archivée dans var/log/sudo
-mode TTY activé
 TTY : requiretty = a non-root code (ex, PHP script) won't be able to directly upgrade its privileges by running sudo
-limiter les paths pour sudo : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
-$ apt update
-$ ls 													we have a new directory here
-$ cd <nameofnewdirectory> && lsblk
-$ cat log 										Input log
-$ cat ttyout									Output log
 $ su -												install sudo
+$ apt update
 $ apt-get update -y
 $ apt-get upgrade -y
 $ apt install sudo
+$ cat log 										Input log
+$ cat ttyout									Output log
 $ visudo -> akostrik ALL=(ALL) ALL sudoers file
 * /etc/sudoers :
-Defaults secure_path="...",
-Defaults passwd_tries=3
-Defaults badpass_message="Password is wrong, please try again!"
-Defaults logfile="/var/log/sudo/sudo.log" (create file if need)
-Defaults log_input,log_output
-Defaults requiretty
-Defaults secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin" restricted the paths used by sudo
-/var/log/sudo/00/00 					sudo logs
+  Defaults secure_path="...",
+  Defaults passwd_tries=30 											3 essais pour sudo maximum
+  Defaults badpass_message="Password is wrong" 	a custom message pour un mauvais mdp avec sudo
+  Defaults logfile="/var/log/sudo/sudo.log" 		chaque action avec sudo est archivée (create file if need)
+  Defaults log_input,log_output
+  Defaults requiretty 													mode TTY activé
+  Defaults secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin" restricttion the paths used by sudo
+/var/log/sudo/00/00 													sudo logs
+$ chage -l akostrik				tester
 
 Un utilisateur appartient au groupe akostrik42 et sudo: login = akostrik42, pwd = root
 $ useradd akostrik 						create user
 $ /usr/bin/groupadd						akostrik42 create group 
-$ groups akostrik							shows all the groups the user is in 
 $ usermod -ahostnaG akostrik	adds the user to the group
 $ /usr/sbin/usermod -a -G akostrik (пользователю выйти / войти)
 $ passwd akostrik 						define password for a user 
@@ -126,10 +124,7 @@ $ passwd akostrik 						define password for a user
 $ groups akostrik 						tester
 $ groups 											tester
 $ id -Gn akostrik 						tester
-$ cut -d: -f1 /etc/password		tester
-* /etc/shadow 								хеш пароля
-$ chage -l your_new_username
-* /etc/sudoers.d/<filename>
+* /etc/sudoers.d 							?
 ПАРОЛЬ akostrik iopiopiopiop
 
 Script SH :
