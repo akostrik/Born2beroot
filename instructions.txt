@@ -1,0 +1,88 @@
+SELinux doit rester actif 
+SELinux : Architecture de securite. Definit les controles d'acces pour les applications, processus et fichiers d'un systeme. A chaque requete generee par un utilisateur, SELinux consulte un cache ou sont stockees les autorisations pour les sujets et objets. Ces autorisations peuvent etre differentes a chaque maille / sous-maille (MLS : Multi level security).
+
+
+AppArmor doit rester actif
+Permet a l'administrateur d'associer a chaque programme un profil de securite qui restreint acces aux systeme d'exploitations. Il est en complement du systeme de controle d'acces Linux en permettant d'utiliser le MAC : Mandatory Access control. Permet un mode d'aprentissage. Difference avec SELinux, AppArmor travaille avec les chemins alors que SELinux s'appuie sur l'application d'indicateurs aux fichiers
+   
+2 partitions chiffrees avec LVM
+- lsblk -> shows the partitions 
+
+Service SSH (Secure Shell) sur le port 4242 uniquement (pas possible de se connecter a SSH avec root)
+Authentification sans mot de passe ou phrase secerete mais avec des cles. La cle publique est distribuee sur les systemes auxquels on souhaite authorises l'acces. La cle privee, unique pour chaque utilisateur et proteger par un mot de passe, est uniquement presente sur le poste en question. On parle d'agent ssh pour stocker la cle privee.
+
+Un pare-feu UFW (Uncomplicated Firewall et ne laisser que le port 4242 ouvert
+Le firewall par defenition. Le trafic entrant est refuse et le trafic sortant est autorise (reglage a privilegier) mais celui ci reste modifiable avec des regles
+- sudo ufw default allow -> autorise le trafic entrant
+- sudo ufw default deny -> refuse le trafic entrant 
+- sudo ufw default allow (deny) ongoing -> autorise (refuse) le trafic sortant
+
+Machine :
+hostname = julpelle42
+politique de mot de passe fort
+installer et configurer sudo 
+un utilisateur qui appartient au groupe user42 et sudo: login = julpelle42 , pwd = root 
+- sudo groupadd [group] -> creates new user group 
+- groups [user] -> shows all the groups the user is in 
+- sudo usermod -ahostnaG [group] [user] -> adds the user to the group
+- sudo passwd [user] -> define password for a user 
+
+Configuration du mot de passe :
+    doit expirer tous les 30j
+    2j minimum avant de pouvoir modifier le mot de passe
+    envoyer un avertissement 7j avant la date d'expiration
+    10 caracteres minimum (dont une Maj, un chiffre, et pas plus de 3 caracteres consecutifs)
+    ne doit pas contenir le nom de l'utilisateur
+    doit comporter 7 caracteres differents de l'ancien mot de passe
+
+Conditions :
+    3 essais pour sudo maximum
+    afficher un message pour un mauvais mot de passe avec sudo
+    chaque action avec sudo est archivée dans var/log/sudo 
+    mode TTY doit etre activé
+    limiter les paths pour sudo : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+
+Script SH :
+    afficher l'Architecture de l'os et son kernel
+    nombre de processeurs physiques
+    nombres de processeurs virtuels
+    memoire vive dispo sur le server et pourcentage utilise 
+    memoire dispo avec le pourcentage
+    taux d'utilisation des processeurs sous forme de pourcentage
+    date et heure du dernier demarrage
+    si LVM actif, YES, sinon NO
+    nombre de connexions actives
+    nombre d'utilisateurs
+    adresse IPv4 et adresse MAC 
+    nombre de commandes executées avec sudo
+
+
+Liens utils :
+https://tbonelee.tistory.com/m/16
+https://coagul.org/drupal/publication/commandes-avanc%C3%A9es-sous-linux
+
+
+Commandes utiles : 
+- ls -Z -> liste les attributs étendus (lien avec SELinux)
+- sudo apt update -> update apt 
+- apt-get install sysstat -> necessaire pour l'affichage des CPU, Disk et autres performances
+
+
+Pour installer ufw : 
+
+/etc/apt/sources.list -> a modifier
+
+deb http://ftp.nl.debian.org/debian wheezy main contrib non-free
+deb-src http://ftp.nl.debian.org/debian wheezy main contrib non-free
+
+deb http://security.debian.org/ wheezy/updates main contrib non-free
+deb-src http://security.debian.org/ wheezy/updates main contrib non-free
+
+# wheezy-updates, previously known as 'volatile'
+deb http://ftp.nl.debian.org/debian wheezy-updates main contrib non-free
+deb-src http://ftp.nl.debian.org/debian wheezy-updates main contrib non-free
+
+puis apt-get update
+
+
+	
