@@ -111,8 +111,8 @@ $ visudo -> akostrik ALL=(ALL) ALL sudoers file
   Defaults log_input,log_output
   Defaults requiretty 													mode TTY activé
   Defaults secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin" restricttion the paths used by sudo
-/var/log/sudo/00/00 													sudo logs
-$ chage -l akostrik				tester
+/var/log/sudo/00/00 														sudo logs
+$ chage -l akostrik															tester
 
 Un utilisateur appartient au groupe akostrik42 et sudo: login = akostrik42, pwd = root
 $ useradd akostrik 						create user
@@ -128,29 +128,17 @@ $ id -Gn akostrik 						tester
 ПАРОЛЬ akostrik iopiopiopiop
 
 Script SH :
-• The architecture of your operating system and its kernel version
-• The number of physical processors
-• The number of virtual processors
-• The current available RAM on your server and its utilization rate as a percentage
-• The current available memory on your server and its utilization rate as a percentage
-• The current utilization rate of your processors as a percentage
-• The date and time of the last reboot
-• Whether LVM is active or not
-• The number of active connections
-• The number of users using the server
-• The IPv4 address of your server and its MAC (Media Access Control) address
-• The number of commands executed with the sudo program
 $ apt-get install sysstat -> necessaire pour l'affichage des CPU, dDisk et autres performances
-create /usr/local/bin/monitoring.sh
+* /usr/local/bin/monitoring.sh
 $ sudo visudo:
-your_username ALL=(ALL) NOPASSWD: /usr/local/bin/monitoring.sh -> the script execute without sudo pass
+  akostrik ALL=(ALL) NOPASSWD: /usr/local/bin/monitoring.sh -> the script execute without sudo pass
 $ sudo reboot
 $ sudo /usr/local/bin/monitoring.sh - выполнить скрипт
 $ sudo crontab -u root -e
 $ sudo crontab -e
 */10 * * * * /usr/local/bin/monitoring.sh
 */1 * * * * sleep 30s && /usr/local/bin/monitoring.sh
-// if error when you reboot, change the Display settings $ drm:vmw_host_log *ERROR* Failed to send host log message.
+// if error when you reboot, change the Display settings $ drm:vmw_host_log *ERROR* Failed to send host log message
 
 Liens utils :
 https://tbonelee.tistory.com/m/16
@@ -159,12 +147,10 @@ https://www.youtube.com/watch?v=OQEdjt38ZJA
 
 Commandes utiles : 
 $ ls -Z -> liste les attributs étendus (lien avec SELinux)
-$ sudo apt update -> update apt 
-$ mkfs
 $ fdisk
+$ mkfs
 $ netstat -tupln | grep LISTEN			какие порты прослушиваются 
 $ ss -lntu													какие порты прослушиваются 
-$ nmap (установить)									какие порты прослушиваются 
+$ nmap															какие порты прослушиваются 
 $ lsof -i 													какие порты прослушиваются 
-
-/etc/apt/sources.list -> a modifier
+* s/etc/apt/sources.list ?
