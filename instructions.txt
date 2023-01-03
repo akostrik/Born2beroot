@@ -128,29 +128,30 @@ $ id -Gn akostrik 						tester
 ПАРОЛЬ akostrik iopiopiopiop
 
 Script SH :
-$ apt-get install sysstat -> necessaire pour l'affichage des CPU, dDisk et autres performances
+$ apt-get install sysstat -> necessaire pour l'affichage des CPU, dDisk, autres performances
 * /usr/local/bin/monitoring.sh
 $ sudo visudo:
+  akostrik ALL=(ALL) ALL
   akostrik ALL=(ALL) NOPASSWD: /usr/local/bin/monitoring.sh -> the script execute without sudo pass
-$ sudo reboot
-$ sudo /usr/local/bin/monitoring.sh - выполнить скрипт
+$ sudo reboot // if error, change the Display settings $ drm:vmw_host_log *ERROR* Failed to send host log message
+$ sudo /usr/local/bin/monitoring.sh
 $ sudo crontab -u root -e
 $ sudo crontab -e
 */10 * * * * /usr/local/bin/monitoring.sh
 */1 * * * * sleep 30s && /usr/local/bin/monitoring.sh
-// if error when you reboot, change the Display settings $ drm:vmw_host_log *ERROR* Failed to send host log message
-
-Liens utils :
-https://tbonelee.tistory.com/m/16
-https://coagul.org/drupal/publication/commandes-avanc%C3%A9es-sous-linux
-https://www.youtube.com/watch?v=OQEdjt38ZJA
 
 Commandes utiles : 
 $ ls -Z -> liste les attributs étendus (lien avec SELinux)
 $ fdisk
 $ mkfs
-$ netstat -tupln | grep LISTEN			какие порты прослушиваются 
-$ ss -lntu													какие порты прослушиваются 
-$ nmap															какие порты прослушиваются 
-$ lsof -i 													какие порты прослушиваются 
+$ ss -tunlp											ports ?
+$ netstat -tupln | grep LISTEN	ports
+$ ss -lntu											ports
+$ nmap													ports
+$ lsof -i 											ports
 * s/etc/apt/sources.list ?
+
+Liens utils :
+https://tbonelee.tistory.com/m/16
+https://coagul.org/drupal/publication/commandes-avanc%C3%A9es-sous-linux
+https://www.youtube.com/watch?v=OQEdjt38ZJA
