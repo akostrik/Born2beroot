@@ -1,40 +1,43 @@
-iSCSI = Internet Small Computer System Interface
-Протокол для установления взаимодействия и управления системами хранения данных, серверами и клиентами
-Базируется на TCP/IP
-Позволяет двум хостам согласовать соединение и после этого обмениваться командами SCSI с помощью интернет протокола (IP)
+1) Chose operationg system Debian
+* ELinux doit rester actif 
+  SELinux = Security-Enhanced Linux : Architecture de securite
+  Definit les controles d'acces pour les applications, processus et fichiers d'un systeme
+  A chaque requete generee par un utilisateur, SELinux consulte un cache ou sont stockees les autorisations pour les sujets et objets
+  Ces autorisations peuvent etre differentes a chaque maille / sous-maille (MLS : Multi level security)
+  Принудительный контроль доступа, может работать параллельно с классической избирательной системой контроля доступа (rwx)
+  Права определяются системой на уровне системных вызовов и применяются ядром (но можно реализовать и на уровне приложения)
+  Нельзя разрешить то, что запрещено через права доступа пользователей или групп
+* AppArmor doit rester actif
+  Associer a chaque programme un profil de securite qui restreint acces aux systeme d'exploitations
+  Il est en complement du systeme de controle d'acces Linux en permettant d'utiliser le MAC : Mandatory Access control
+  Permet un mode d'aprentissage
+  Difference avec SELinux : travaille avec les chemins alors que SELinux s'appuie sur l'application d'indicateurs aux fichiers
+  Программный инструмент упреждающей защиты, основанный на политиках (профилях) безопасности - к каким системным ресурсам и с какими привилегиями может получить доступ приложение
+* apt = Advanced Packaging Tool = lower-level package manager, can be used by other higher-level package managers
+  command line, no GUI 
+  finds in /etc/apt/sources.list the package and its dependencies, automatically installs them
+  allow User to control various configurations easily
+* aptitude = high-level package manager = front-end to advanced packaging tool 
+  a user interface to the functionality, interactively search for a package, install, remove it
+  Can emulate most of apt-get’s command line arguments.
+  Abstracts low level details, can operate in both text-based interactive UI mode and even in command line non-interactive mode.
+* both handle all kinds of activities on packages (installation, removal, search ...)
+  https://www.tecmint.com/difference-between-apt-and-aptitude/
 
-SELinux doit rester actif 
-SELinux = Security-Enhanced Linux : Architecture de securite
-Definit les controles d'acces pour les applications, processus et fichiers d'un systeme
-A chaque requete generee par un utilisateur, SELinux consulte un cache ou sont stockees les autorisations pour les sujets et objets
-Ces autorisations peuvent etre differentes a chaque maille / sous-maille (MLS : Multi level security
-Принудительный контроль доступа, может работать параллельно с классической избирательной системой контроля доступа (rwx)
-Права определяются системой на уровне системных вызовов и применяются ядром (но можно реализовать и на уровне приложения)
-Нельзя разрешить то, что запрещено через права доступа пользователей или групп
-
-AppArmor doit rester actif
-Associer a chaque programme un profil de securite qui restreint acces aux systeme d'exploitations
-Il est en complement du systeme de controle d'acces Linux en permettant d'utiliser le MAC : Mandatory Access control
-Permet un mode d'aprentissage
-Difference avec SELinux : travaille avec les chemins alors que SELinux s'appuie sur l'application d'indicateurs aux fichiers
-Программный инструмент упреждающей защиты, основанный на политиках (профилях) безопасности - к каким системным ресурсам и с какими привилегиями может получить доступ приложение
-
-Diff between aptitude and apt
-Aptitude is a high-level package manager while APT is lower-level package manager which can be used by other 
-higher-level package managers
-(read more: https://www.tecmint.com/difference-between-apt-and-aptitude/)
-
-2 partitions chiffrees avec LVM
-$ lsblk -> shows the partitions 
+2) Two partitions chiffrees avec LVM
+$ lsblk -> shows the partitions
 название устройства : MAJ MIN старший и младший номера устройств : RM 1 съемное : RО 1 только для чтения : диск/уст-во обратной связи/раздел/уст-во LVM
 Первый обнаруженный жёсткий диск называется /dev/sda, второй /dev/sdb, ...
 Первый SCSI CD-ROM называется /dev/scd0, также можно использовать /dev/sr0
+LVM = logical volume management = provides a method of allocating space on mass-storage devices that is more flexible than conventional 
+partitioning schemes (concatenate, stripe together or otherwise combine partitions into larger virtual partitions 
+that administrators can re-size or move, potentially without interrupting system use)
 
-Service SSH (Secure Shell) sur le port 4242 uniquement
-Authentification sans mot de passe ou phrase secerete mais avec des cles
+3) Service SSH (Secure Shell) sur le port 4242 uniquement
+Authentification sans mot de passe, mais avec des cles
 Как бы работаете непосредственно на той машине
 La cle publique est distribuee sur les systemes auxquels on souhaite authorises l'acces
-La cle privee, unique pour chaque utilisateur et proteger par un mot de passe, est uniquement presente sur le poste en question; on parle d'agent ssh pour stocker la cle privee
+La cle privee, unique pour chaque utilisateur et proteger par un mot de passe, est uniquement presente sur le poste en question; agent ssh stocke la cle privee
 * /etc/ssh/sshd_config Port 4242					
 * /etc/ssh/sshd_config PermitRootLogin		pas possible de se connecter a SSH avec root
 * перезагрузить SSH-сервер: /etc/init.d/ssh restart, или ./sshrestart или /etc/init.d/sshd restart, или systemctl restart sshd.service
@@ -47,7 +50,7 @@ $ sudo apt-get updates										install sudo
 $ sudo apt install openssh-server
 $ service ssh restart
 
-Un pare-feu UFW (Uncomplicated Firewall)
+4) Un pare-feu UFW (Uncomplicated Firewall)
 Le trafic entrant est refuse et le trafic sortant est autorise (reglage)
 $ apt update -y install
 $ apt install ufw -y install
@@ -63,7 +66,7 @@ $ ufw delete 4 (правило 4)
 $ ufw allow ssh
 $ dpkg -l | grep ufw
 
-hostname = akostrik42
+4) hostname = akostrik42
 $ hostname
 $ hostnamectl ОС
 $ hostnamectl set-hostname поменять постоянно
@@ -72,28 +75,28 @@ $ sudo reboot
 $ hostname akostrik43 поменять временно
 * /etc/hostname
 
-pam = pluggable authentification method, a flexible authentication mechanism used by the application software
-1) Normal Unix authentication pam_unix under PAM (/etc/passwd /etc/shadow /etc/group)
-2) Strong password policy :
-$ sudo apt-get install libpam-pwquality							installing password quality checking library
-/etc/pam.d/common-password:
-  -> password requisite pam_pwquality.so retry=3 lcredit =-1 ucredit=-1 dcredit=-1 maxrepeat=3 usercheck=0 difok=7 enforce_for_root
-    // basic checks
-    // dcredit=-1 credit=-1 credit=-1 contain an uppercase letter, a lowercase letter, and a number
-    // maxrepeat=3 pas plus de 3 caracteres consecutifs
-    // usercheck=1 ne doit pas contenir le nom de l'utilisateur
-    // difok=7 <=7 characters that are not part of the former password 
-    // enforce_for_root															apply to the root password
-    // inclass=3 ?
-  -> password [success=2 default=ignore] pam_unix.so obscure sha512 minlen=10
-    // checking users password, default = not permit the user access to a service if their official password is blank
-  -> password required pam_deny.so
-  -> password required pam_permit.so
-/etc/login.defs PASS_MAX_DAYS 30j										expire tous les 30j, 2j minimum pour modifier, un avertissement 7j
-/etc/pam.d/passwd ?
-$ sudo reboot
+5) pam = pluggable authentification method, a flexible authentication mechanism used by the application software
+a) Normal Unix authentication pam_unix under PAM (/etc/passwd /etc/shadow /etc/group)
+b) Strong password policy :
+   $ sudo apt-get install libpam-pwquality							installing password quality checking library
+   /etc/pam.d/common-password:
+    -> password requisite pam_pwquality.so retry=3 lcredit =-1 ucredit=-1 dcredit=-1 maxrepeat=3 usercheck=0 difok=7 enforce_for_root
+       // basic checks
+       // dcredit=-1 credit=-1 credit=-1 contain an uppercase letter, a lowercase letter, and a number
+       // maxrepeat=3 pas plus de 3 caracteres consecutifs
+       // usercheck=1 ne doit pas contenir le nom de l'utilisateur
+       // difok=7 <=7 characters that are not part of the former password 
+       // enforce_for_root															apply to the root password
+       // inclass=3 ?
+     -> password [success=2 default=ignore] pam_unix.so obscure sha512 minlen=10
+       // checking users password, default = not permit the user access to a service if their official password is blank
+     -> password required pam_deny.so
+     -> password required pam_permit.so
+   /etc/login.defs PASS_MAX_DAYS 30j										expire tous les 30j, 2j minimum pour modifier, un avertissement 7j
+   /etc/pam.d/passwd ?
+   $ sudo reboot
 
-Installer, configurer sudo 
+6) Installer, configurer sudo 
 TTY : requiretty = a non-root code (ex, PHP script) won't be able to directly upgrade its privileges by running sudo
 $ su -												install sudo
 $ apt update
@@ -114,7 +117,7 @@ $ visudo -> akostrik ALL=(ALL) ALL sudoers file
 /var/log/sudo/00/00 														sudo logs
 $ chage -l akostrik															tester
 
-Un utilisateur appartient au groupe akostrik42 et sudo: login = akostrik42, pwd = root
+7) Un utilisateur appartient au groupe akostrik42 et sudo: login = akostrik42, pwd = root
 $ useradd akostrik 						create user
 $ /usr/bin/groupadd						akostrik42 create group 
 $ usermod -ahostnaG akostrik	adds the user to the group
@@ -127,8 +130,9 @@ $ id -Gn akostrik 						tester
 * /etc/sudoers.d 							?
 ПАРОЛЬ akostrik iopiopiopiop
 
-Script SH :
+8) Script SH :
 $ apt-get install sysstat -> necessaire pour l'affichage des CPU, dDisk, autres performances
+$ sudo apt install net-tools
 * /usr/local/bin/monitoring.sh
 $ sudo visudo:
   akostrik ALL=(ALL) ALL
@@ -140,7 +144,9 @@ $ sudo crontab -e
 */10 * * * * /usr/local/bin/monitoring.sh
 */1 * * * * sleep 30s && /usr/local/bin/monitoring.sh
 
-Commandes utiles : 
+9) Turn in a signature.txt file at the root of your repository
+
+*) Just info : 
 $ ls -Z -> liste les attributs étendus (lien avec SELinux)
 $ fdisk
 $ mkfs
@@ -149,9 +155,18 @@ $ netstat -tupln | grep LISTEN	ports
 $ ss -lntu											ports
 $ nmap													ports
 $ lsof -i 											ports
-* s/etc/apt/sources.list ?
+$ chmod g+w // группе добавляется право на запись, владельцу u, остальным o, всем a
+$ chmod o-r // остальным запрещается читать файл
 
-Liens utils :
+
+https://baigal.medium.com/born2beroot-e6e26dfb50ac
 https://tbonelee.tistory.com/m/16
 https://coagul.org/drupal/publication/commandes-avanc%C3%A9es-sous-linux
 https://www.youtube.com/watch?v=OQEdjt38ZJA
+
+iSCSI = Internet Small Computer System Interface
+Протокол для установления взаимодействия и управления системами хранения данных, серверами и клиентами
+Базируется на TCP/IP
+Позволяет двум хостам согласовать соединение и после этого обмениваться командами SCSI с помощью интернет протокола (IP)
+
+S
