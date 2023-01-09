@@ -33,70 +33,7 @@ LVM = logical volume management = provides a method of allocating space on mass-
 partitioning schemes (concatenate, stripe together or otherwise combine partitions into larger virtual partitions 
 that administrators can re-size or move, potentially without interrupting system use)
 
-3) Service SSH (Secure Shell) sur le port 4242 uniquement
-Authentification sans mot de passe, mais avec des cles
-Как бы работаете непосредственно на той машине
-La cle publique est distribuee sur les systemes auxquels on souhaite authorises l'acces
-La cle privee, unique pour chaque utilisateur et proteger par un mot de passe, est uniquement presente sur le poste en question; agent ssh stocke la cle privee
-* /etc/ssh/sshd_config Port 4242					
-* /etc/ssh/sshd_config PermitRootLogin		pas possible de se connecter a SSH avec root
-* перезагрузить SSH-сервер: /etc/init.d/ssh restart, или ./sshrestart или /etc/init.d/sshd restart, или systemctl restart sshd.service
-$ systemctl status sshd										tester
-$ grep Port /etc/ssh/sshd_config					tester
-$ service ssh status					
-$ ssh kostrik@127.0.0.1 -p 4242						connect to VM from your host (physical) machine via SSH
-* ssh p4242 127.0.0.1
-$ sudo apt-get updates										install sudo
-$ sudo apt install openssh-server
-$ service ssh restart
-
-4) Un pare-feu UFW (Uncomplicated Firewall)
-Le trafic entrant est refuse et le trafic sortant est autorise (reglage)
-$ apt update -y install
-$ apt install ufw -y install
-* /etc/default/ufw IPV6=yes
-$ ufw default allow									autorise le trafic entrant
-$ ufw default deny									refuse le trafic entrant 
-$ ufw default allow (deny) ongoing	autorise (refuse) le trafic sortant
-$ ufw allow 4242										ne laisser que le port 4242 ouvert
-$ ufw deny 8080							
-$ ufw enable
-$ ufw status numbered
-$ ufw delete 4 (правило 4)
-$ ufw allow ssh
-$ dpkg -l | grep ufw
-
-4) hostname = akostrik42
-$ hostname
-$ hostnamectl ОС
-$ hostnamectl set-hostname поменять постоянно
-* etc/hostname и /etc/hosts поменять постоянно
-$ sudo reboot
-$ hostname akostrik43 поменять временно
-* /etc/hostname
-
-5) pam = pluggable authentification method, a flexible authentication mechanism used by the application software
-a) Normal Unix authentication pam_unix under PAM (/etc/passwd /etc/shadow /etc/group)
-b) Strong password policy :
-   $ sudo apt-get install libpam-pwquality							installing password quality checking library
-   /etc/pam.d/common-password:
-    -> password requisite pam_pwquality.so retry=3 lcredit =-1 ucredit=-1 dcredit=-1 maxrepeat=3 usercheck=0 difok=7 enforce_for_root
-       // basic checks
-       // dcredit=-1 credit=-1 credit=-1 contain an uppercase letter, a lowercase letter, and a number
-       // maxrepeat=3 pas plus de 3 caracteres consecutifs
-       // usercheck=1 ne doit pas contenir le nom de l'utilisateur
-       // difok=7 <=7 characters that are not part of the former password 
-       // enforce_for_root															apply to the root password
-       // inclass=3 ?
-     -> password [success=2 default=ignore] pam_unix.so obscure sha512 minlen=10
-       // checking users password, default = not permit the user access to a service if their official password is blank
-     -> password required pam_deny.so
-     -> password required pam_permit.so
-   /etc/login.defs PASS_MAX_DAYS 30j										expire tous les 30j, 2j minimum pour modifier, un avertissement 7j
-   /etc/pam.d/passwd ?
-   $ sudo reboot
-
-6) Installer, configurer sudo 
+3) Installer, configurer sudo 
 TTY : requiretty = a non-root code (ex, PHP script) won't be able to directly upgrade its privileges by running sudo
 $ su -												install sudo
 $ apt update
@@ -117,17 +54,82 @@ $ visudo -> akostrik ALL=(ALL) ALL sudoers file
 /var/log/sudo/00/00 														sudo logs
 $ chage -l akostrik															tester
 
+4) Service SSH = Secure Shell sur le port 4242 uniquement
+Authentification sans mot de passe, avec des cles
+Как бы работаете непосредственно на той машине
+La cle publique sur les systemes auxquels on souhaite authorises l'acces
+La cle privee, unique pour chaque utilisateur, sur le poste en question (agent ssh = stocker la cle privee)
+$ sudo apt install openssh-server
+* /etc/ssh/sshd_config Port 4242, PermitRootLogin, PubkeyAuthenticqtion yes
+* перезагрузить SSH-сервер одно из: /etc/init.d/ssh restart, ./sshrestart, /etc/init.d/sshd restart, systemctl restart sshd.service
+$ systemctl status ssh										test
+$ service ssh status											test
+$ grep Port /etc/ssh/sshd_config					test
+
+5) establiconnect ssh
+$ ssh-copy-id -i ~/.ssh/id_rsa.pub -p 4242 akostrik@127.0.0.1
+$ ssh-copy-id -f -i ~/.ssh/id_rsa.pub -o StrictHostKeyChecking=no -o "IdentityFile ~/ssh_key.pem" -p 4242 akostrik@127.0.0.1
+$ ssh akostrik@127.0.0.1 -p 4242					test: connect to VM from your host (physical) machine via SSH
+* ssh 127.0.0.1 -p 4242
+// sudo ufw disable												исключить блокировку входящих подключений брандмауэром ?
+
+
+5) Un pare-feu UFW = Uncomplicated Firewall
+Le trafic entrant est refuse et le trafic sortant est autorise (reglage)
+$ apt update -y
+$ apt install ufw -y
+* /etc/default/ufw IPV6=yes
+$ ufw enable
+$ ufw default allow (deny)						autorise (refuse) le trafic entrant
+$ ufw default allow (deny) ongoing		autorise (refuse) le trafic sortant
+$ ufw allow 4242											ne laisser que le port 4242 ouvert
+$ ufw deny 8080							
+$ ufw status numbered
+$ ufw delete 4 (правило 4)
+$ ufw allow ssh
+$ dpkg -l | grep ufw
+
+6) hostname = akostrik42
+$ hostname
+$ hostnamectl ОС
+$ hostnamectl set-hostname поменять постоянно
+* etc/hostname и /etc/hosts поменять постоянно
+$ sudo reboot
+$ hostname akostrik43 поменять временно
+* /etc/hostname
+
+7) pam = pluggable authentification method, a flexible authentication mechanism used by the application software
+a) Normal Unix authentication pam_unix under PAM (/etc/passwd /etc/shadow /etc/group)
+b) Strong password policy :
+   $ sudo apt-get install libpam-pwquality							installing password quality checking library
+   /etc/pam.d/common-password:
+    -> password requisite pam_pwquality.so retry=3 lcredit =-1 ucredit=-1 dcredit=-1 maxrepeat=3 usercheck=0 difok=7 enforce_for_root
+       // basic checks
+       // dcredit=-1 credit=-1 credit=-1 contain an uppercase letter, a lowercase letter, and a number
+       // maxrepeat=3 pas plus de 3 caracteres consecutifs
+       // usercheck=1 ne doit pas contenir le nom de l'utilisateur
+       // difok=7 <=7 characters that are not part of the former password 
+       // enforce_for_root															apply to the root password
+       // inclass=3 ?
+     -> password [success=2 default=ignore] pam_unix.so obscure sha512 minlen=10
+       // checking users password, default = not permit the user access to a service if their official password is blank
+     -> password required pam_deny.so
+     -> password required pam_permit.so
+   /etc/login.defs PASS_MAX_DAYS 30j										expire tous les 30j, 2j minimum pour modifier, un avertissement 7j
+   /etc/pam.d/passwd ?
+   $ sudo reboot
+
 7) Un utilisateur appartient au groupe akostrik42 et sudo: login = akostrik42, pwd = root
-$ useradd akostrik 						create user
-$ /usr/bin/groupadd						akostrik42 create group 
-$ usermod -ahostnaG akostrik	adds the user to the group
-$ /usr/sbin/usermod -a -G akostrik (пользователю выйти / войти)
-$ passwd akostrik 						define password for a user 
-* /etc/passwd 								list of users
-$ groups akostrik 						tester
-$ groups 											tester
-$ id -Gn akostrik 						tester
-* /etc/sudoers.d 							?
+$ useradd akostrik 							create user
+$ /usr/bin/groupadd akostrik42	create group 
+$ usermod -ahostnaG akostrik		adds the user to the group (пользователю выйти / войти)
+$ /usr/sbin/usermod -a -G akostrik -||-
+$ passwd akostrik 							define password for a user 
+* /etc/passwd 									list of users
+$ groups akostrik 							tester
+$ groups 												tester
+$ id -Gn akostrik 							tester
+* /etc/sudoers.d 								?
 ПАРОЛЬ akostrik iopiopiopiop
 
 8) Script SH :
