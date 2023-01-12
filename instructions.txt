@@ -1,4 +1,8 @@
-1) Chose operationg system Debian
+1) Creer machine virtuelle
+  системв / материнская плата / не менее 2 ГБ (2048 гигабайт) оперативной памяти
+	не менее двух ядер ЦП
+
+1) Chose Debian
 * ELinux doit rester actif 
   SELinux = Security-Enhanced Linux : Architecture de securite
   Definit les controles d'acces pour les applications, processus et fichiers d'un systeme
@@ -23,6 +27,7 @@
   Abstracts low level details, can operate in both text-based interactive UI mode and even in command line non-interactive mode.
 * both handle all kinds of activities on packages (installation, removal, search ...)
   https://www.tecmint.com/difference-between-apt-and-aptitude/
+* 
 
 2) Two partitions chiffrees avec LVM
 $ lsblk -> shows the partitions
@@ -68,8 +73,7 @@ $ grep Port /etc/ssh/sshd_config					test
 
 5) to connect via ssh
 VirtualBox / VM Settings / Network / Adapter 1 / Advanced / Port Forwarding
-
-
+ 
 $ ifconfig 													afficher notre ip
   attached to :
   a) internel network -> enp0s3 inet6 fe80::a00:27ff:fefc:a23f
