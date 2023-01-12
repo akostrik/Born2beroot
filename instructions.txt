@@ -84,7 +84,7 @@ $ ssh akostrik@127.0.0.1 -p 4242					test: connect to VM from your host (physica
 // VirtualBox подключение по SSH не работает - по умолчанию на VirtualBox используется подключение к интернету с помощью NAT
 // При таком способе подключения у вас нет возможности подключаться к виртуальной машине из своей реальной операционной системы. В частности, вы не сможете подключиться по SSH
 
-5) Un pare-feu UFW = Uncomplicated Firewall
+6) Un pare-feu UFW = Uncomplicated Firewall
 Le trafic entrant est refuse et le trafic sortant est autorise (reglage)
 $ apt update -y
 $ apt install ufw -y
@@ -99,7 +99,7 @@ $ ufw delete 4 (правило 4)
 $ ufw allow ssh
 $ dpkg -l | grep ufw
 
-6) hostname = akostrik42
+7) hostname = akostrik42
 $ hostname
 $ hostnamectl ОС
 $ hostnamectl set-hostname поменять постоянно
@@ -108,7 +108,7 @@ $ sudo reboot
 $ hostname akostrik43 поменять временно
 * /etc/hostname
 
-7) pam = pluggable authentification method, a flexible authentication mechanism used by the application software
+8) pam = pluggable authentification method, a flexible authentication mechanism used by the application software
 a) Normal Unix authentication pam_unix under PAM (/etc/passwd /etc/shadow /etc/group)
 b) Strong password policy :
    $ sudo apt-get install libpam-pwquality							installing password quality checking library
@@ -129,7 +129,7 @@ b) Strong password policy :
    /etc/pam.d/passwd ?
    $ sudo reboot
 
-7) Un utilisateur appartient au:
+9) Un utilisateur:
 $ useradd akostrik 							create user
 $ /usr/bin/groupadd akostrik42	create group 
 $ usermod -ahostnaG akostrik		adds the user to the group (пользователю выйти / войти)
@@ -143,7 +143,7 @@ $ id -Gn akostrik 							tester
 user akostrik iopiopiopiop, groupe akostrik42 et sudo
 user akostrik2 iopiopIOP++1
 
-8) Script SH :
+10) Script SH :
 $ apt-get install sysstat -> necessaire pour l'affichage des CPU, dDisk, autres performances
 $ sudo apt install net-tools
 * /usr/local/bin/monitoring.sh
@@ -157,9 +157,9 @@ $ sudo crontab -e
 */10 * * * * /usr/local/bin/monitoring.sh
 */1 * * * * sleep 30s && /usr/local/bin/monitoring.sh
 
-9) Turn in a signature.txt file at the root of your repository
+11) Turn in a signature.txt to your repositoire
 
-*) Just info : 
+12) Some info:
 $ ls -Z -> liste les attributs étendus (lien avec SELinux)
 $ fdisk
 $ mkfs
@@ -181,5 +181,3 @@ iSCSI = Internet Small Computer System Interface
 Протокол для установления взаимодействия и управления системами хранения данных, серверами и клиентами
 Базируется на TCP/IP
 Позволяет двум хостам согласовать соединение и после этого обмениваться командами SCSI с помощью интернет протокола (IP)
-
-S
