@@ -66,13 +66,23 @@ $ systemctl status ssh										test
 $ service ssh status											test
 $ grep Port /etc/ssh/sshd_config					test
 
-5) establiconnect ssh
+5) to connect via ssh
+VirtualBox / VM Settings / Network / Adapter 1 / Advanced / Port Forwarding
+
+
+$ ifconfig 													afficher notre ip
+  attached to :
+  a) internel network -> enp0s3 inet6 fe80::a00:27ff:fefc:a23f
+  b) NAT network - doesn't work
+  c) NAT, port forwarding ... -> enp0s3 inet 10.0.2.15 inet6 fe80::a00:27ff:fefc:a23f, lo inet 127.0.0.1
 $ ssh-copy-id -i ~/.ssh/id_rsa.pub -p 4242 akostrik@127.0.0.1
-$ ssh-copy-id -f -i ~/.ssh/id_rsa.pub -o StrictHostKeyChecking=no -o "IdentityFile ~/ssh_key.pem" -p 4242 akostrik@127.0.0.1
+$ ssh-copy-id -f -i ~/.ssh/id_rsa.pub -o StrictHostKeyChecking=no -o "IdentityFile ~/ssh_key.pem" -p 4242 akostrik@127.0.0.1__
+// StrictHostKeyChecking = избежать запросов безопасности
 $ ssh akostrik@127.0.0.1 -p 4242					test: connect to VM from your host (physical) machine via SSH
 * ssh 127.0.0.1 -p 4242
 // sudo ufw disable												исключить блокировку входящих подключений брандмауэром ?
-
+// VirtualBox подключение по SSH не работает - по умолчанию на VirtualBox используется подключение к интернету с помощью NAT
+// При таком способе подключения у вас нет возможности подключаться к виртуальной машине из своей реальной операционной системы. В частности, вы не сможете подключиться по SSH
 
 5) Un pare-feu UFW = Uncomplicated Firewall
 Le trafic entrant est refuse et le trafic sortant est autorise (reglage)
@@ -119,7 +129,7 @@ b) Strong password policy :
    /etc/pam.d/passwd ?
    $ sudo reboot
 
-7) Un utilisateur appartient au groupe akostrik42 et sudo: login = akostrik42, pwd = root
+7) Un utilisateur appartient au:
 $ useradd akostrik 							create user
 $ /usr/bin/groupadd akostrik42	create group 
 $ usermod -ahostnaG akostrik		adds the user to the group (пользователю выйти / войти)
@@ -130,7 +140,8 @@ $ groups akostrik 							tester
 $ groups 												tester
 $ id -Gn akostrik 							tester
 * /etc/sudoers.d 								?
-ПАРОЛЬ akostrik iopiopiopiop
+user akostrik iopiopiopiop, groupe akostrik42 et sudo
+user akostrik2 iopiopIOP++1
 
 8) Script SH :
 $ apt-get install sysstat -> necessaire pour l'affichage des CPU, dDisk, autres performances
