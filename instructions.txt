@@ -1,187 +1,138 @@
 1) Creer machine virtuelle
-  системв / материнская плата / не менее 2 ГБ (2048 гигабайт) оперативной памяти
-	не менее двух ядер ЦП
+  система / материнская плата / не менее 2 ГБ (2048 гигабайт) оперативной памяти
+  How a virtual machine works
+  The purpose of virtual machines
 
-2) Chose Debian
-* ELinux doit rester actif 
-  SELinux = Security-Enhanced Linux : Architecture de securite
-  Definit les controles d'acces pour les applications, processus et fichiers d'un systeme
-  A chaque requete generee par un utilisateur, SELinux consulte un cache ou sont stockees les autorisations pour les sujets et objets
-  Ces autorisations peuvent etre differentes a chaque maille / sous-maille (MLS : Multi level security)
-  Принудительный контроль доступа, может работать параллельно с классической избирательной системой контроля доступа (rwx)
-  Права определяются системой на уровне системных вызовов и применяются ядром (но можно реализовать и на уровне приложения)
-  Нельзя разрешить то, что запрещено через права доступа пользователей или групп
+2) Debian
+* The basic differences between Rocky and Debian
+* Debian:
+  multiple architecture support
+  a vasy amount of packages in its default repository
+  easily upgrated
+  user-friendly applications and GUI (Graphical User Interface)
+* apt = Advanced Packaging Tool = lower-level package manager, can be used by other higher-level package managers
+  command line, no GUI 
+  finds in /etc/apt/sources.list the package and its dependencies, automatically installs them
+  easy control of configurations
+* aptitude = high-level package manager
+  a user interface to the functionality, interactively search for a package, install, remove it
+  Can emulate most of apt-get’s command line arguments
+  Abstracts low level details, can operate in both text-based interactive UI mode and even in command line non-interactive mode.
 * AppArmor doit rester actif
   Associer a chaque programme un profil de securite qui restreint acces aux systeme d'exploitations
   Il est en complement du systeme de controle d'acces Linux en permettant d'utiliser le MAC : Mandatory Access control
   Permet un mode d'aprentissage
   Difference avec SELinux : travaille avec les chemins alors que SELinux s'appuie sur l'application d'indicateurs aux fichiers
   Программный инструмент упреждающей защиты, основанный на политиках (профилях) безопасности - к каким системным ресурсам и с какими привилегиями может получить доступ приложение
-* apt = Advanced Packaging Tool = lower-level package manager, can be used by other higher-level package managers
-  command line, no GUI 
-  finds in /etc/apt/sources.list the package and its dependencies, automatically installs them
-  allow User to control various configurations easily
-* aptitude = high-level package manager = front-end to advanced packaging tool 
-  a user interface to the functionality, interactively search for a package, install, remove it
-  Can emulate most of apt-get’s command line arguments.
-  Abstracts low level details, can operate in both text-based interactive UI mode and even in command line non-interactive mode.
 * both handle all kinds of activities on packages (installation, removal, search ...)
   https://www.tecmint.com/difference-between-apt-and-aptitude/
-* 
 
-3) Two partitions chiffrees avec LVM
-$ lsblk -> shows the partitions
-название устройства : MAJ MIN старший и младший номера устройств : RM 1 съемное : RО 1 только для чтения : диск/уст-во обратной связи/раздел/уст-во LVM
-Первый обнаруженный жёсткий диск называется /dev/sda, второй /dev/sdb, ...
-Первый SCSI CD-ROM называется /dev/scd0, также можно использовать /dev/sr0
-LVM = logical volume management = provides a method of allocating space on mass-storage devices that is more flexible than conventional 
-partitioning schemes (concatenate, stripe together or otherwise combine partitions into larger virtual partitions 
-that administrators can re-size or move, potentially without interrupting system use)
+3) user
+$ useradd akostrik 							create user
+$ /usr/bin/groupadd akostrik42	create group 
+$ /usr/sbin/usermod -a -G akostrik adds the user to the groupо (пользвателю выйти / войти)
+$ passwd akostrik 							define password for a user 
+* /etc/passwd 									test (list of users)
+$ groups akostrik 							test
+// akostrik iopiopiopiop, akostrik42 et sudo
 
-4) Installer, configurer sudo 
-TTY : requiretty = a non-root code (ex, PHP script) won't be able to directly upgrade its privileges by running sudo
-$ su -												install sudo
+4) pam = pluggable authentification method
+Strong password policy
+$ sudo apt-get install libpam-pwquality	password quality checking library
+/etc/pam.d/common-password:
+  password requisite pam_pwquality.so retry=3 lcredit =-1 ucredit=-1 dcredit=-1 maxrepeat=3 usercheck=0 difok=7 enforce_for_root
+   // dcredit=-1 credit=-1 credit=-1		an uppercase letter, a lowercase letter, and a number
+   // maxrepeat=3												pas plus de 3 caracteres consecutifs
+   // usercheck=1 											ne doit pas contenir le nom de l'utilisateur
+   // difok=7														7 characters are not part of the former password 
+   // enforce_for_root									apply to the root password
+  password [success=2 default=ignore] pam_unix.so obscure sha512 minlen=10
+  // default = not permit the user access to a service if the password is blank
+/etc/login.defs 
+		PASS_MAX_DAYS 30j										expire tous les 30j, 2j minimum pour modifier, un avertissement 7j
+$ sudo reboot
+$ chage -l akostrik											test
+* the advantages of this password policy
+* the advantages and disadvantages of its implementation
+* Normal Unix authentication /etc/passwd /etc/shadow /etc/group
+
+4) hostname
+$ hostname
+$ hostnamectl set-hostname 							change
+$ sudo reboot
+
+5) Two partitions chiffrees avec LVM
+$ lsblk 																shows the partitions
+LVM = logical volume management : provides a flexible method of allocating space (concatenate, re-size, move partitions)
+
+6) Installer, configurer sudo 
+$ su -
 $ apt update
 $ apt-get update -y
 $ apt-get upgrade -y
 $ apt install sudo
-$ cat log 										Input log
-$ cat ttyout									Output log
-$ visudo -> akostrik ALL=(ALL) ALL sudoers file
+$ cat log 																			input log
+$ cat ttyout																		output log
+$ visudo -> akostrik ALL=(ALL) ALL
 * /etc/sudoers :
-  Defaults secure_path="...",
-  Defaults passwd_tries=30 											3 essais pour sudo maximum
-  Defaults badpass_message="Password is wrong" 	a custom message pour un mauvais mdp avec sudo
+  Defaults secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin" restricttion the paths used by sudo
+  Defaults passwd_tries=3												3 essais pour sudo maximum
+  Defaults badpass_message="Password is wrong"	message pour un mauvais mdp avec sudo
   Defaults logfile="/var/log/sudo/sudo.log" 		chaque action avec sudo est archivée (create file if need)
   Defaults log_input,log_output
-  Defaults requiretty 													mode TTY activé
-  Defaults secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin" restricttion the paths used by sudo
-/var/log/sudo/00/00 														sudo logs
-$ chage -l akostrik															tester
+  Defaults requiretty 													mode TTY activé = a non-root code (ex script) aren't able to directly upgrade its privileges by running sudo
 
-5) Service SSH = Secure Shell sur le port 4242 uniquement
-Authentification sans mot de passe, avec des cles
-Как бы работаете непосредственно на той машине
-La cle publique sur les systemes auxquels on souhaite authorises l'acces
-La cle privee, unique pour chaque utilisateur, sur le poste en question (agent ssh = stocker la cle privee)
-$ sudo apt install openssh-server
-* /etc/ssh/sshd_config Port 4242, PermitRootLogin, PubkeyAuthenticqtion yes
-* перезагрузить SSH-сервер одно из: /etc/init.d/ssh restart, ./sshrestart, /etc/init.d/sshd restart, systemctl restart sshd.service
-$ systemctl status ssh										test
-$ service ssh status											test
-$ grep Port /etc/ssh/sshd_config					test
-
-6) to connect via ssh
-VirtualBox / VM Settings / Network / Adapter 1 / Advanced / Port Forwarding
-$ ifconfig 													afficher notre ip
-  attached to :
-  a) internel network -> enp0s3 inet6 fe80::a00:27ff:fefc:a23f
-  b) NAT network - doesn't work
-  c) NAT, port forwarding ... -> enp0s3 inet 10.0.2.15 inet6 fe80::a00:27ff:fefc:a23f, lo inet 127.0.0.1
-$ ssh-copy-id -i ~/.ssh/id_rsa.pub -p 4242 akostrik@127.0.0.1
-$ ssh-copy-id -f -i ~/.ssh/id_rsa.pub -o StrictHostKeyChecking=no -o "IdentityFile ~/ssh_key.pem" -p 4242 akostrik@127.0.0.1__
-// StrictHostKeyChecking = избежать запросов безопасности
-$ ssh akostrik@127.0.0.1 -p 4242					test: connect to VM from your host (physical) machine via SSH
-* ssh 127.0.0.1 -p 4242
-// sudo ufw disable												исключить блокировку входящих подключений брандмауэром ?
-// VirtualBox подключение по SSH не работает - по умолчанию на VirtualBox используется подключение к интернету с помощью NAT
-// При таком способе подключения у вас нет возможности подключаться к виртуальной машине из своей реальной операционной системы. В частности, вы не сможете подключиться по SSH
-
-7) Un pare-feu UFW = Uncomplicated Firewall
-Le trafic entrant est refuse et le trafic sortant est autorise (reglage)
+7) UFW = Uncomplicated Firewall
+Le trafic entrant est refuse, le trafic sortant est autorise
 $ apt update -y
 $ apt install ufw -y
 * /etc/default/ufw IPV6=yes
 $ ufw enable
-$ ufw default allow (deny)						autorise (refuse) le trafic entrant
-$ ufw default allow (deny) ongoing		autorise (refuse) le trafic sortant
-$ ufw allow 4242											ne laisser que le port 4242 ouvert
-$ ufw deny 8080							
+$ ufw default allow (deny)											autorise (refuse) le trafic entrant
+$ ufw default allow (deny) ongoing							autorise (refuse) le trafic sortant
+$ ufw allow 4242																ne laisser que le port 4242 ouvert
+$ ufw deny 8080
 $ ufw status numbered
-$ ufw delete 4 (правило 4)
+$ ufw delete 4 																	delete rule 4
 $ ufw allow ssh
-$ dpkg -l | grep ufw
 
-7) hostname = akostrik42
-$ hostname
-$ hostnamectl ОС
-$ hostnamectl set-hostname поменять постоянно
-* etc/hostname и /etc/hosts поменять постоянно
-$ sudo reboot
-$ hostname akostrik43 поменять временно
-* /etc/hostname
+8) SSH = Secure Shell, le port 4242 uniquement
+Authentification sans mot de passe, avec des cles
+La cle publique sur le serveur, la cle privee, unique pour un utilisateur, sur le client
+Как бы работаете непосредственно на той машине
+$ sudo apt install openssh-server
+* /etc/ssh/sshd_config Port 4242, PermitRootLogin, PubkeyAuthenticqtion yes
+$ systemctl restart sshd.service							reboot SSH-server
+$ systemctl status ssh												test
 
-8) pam = pluggable authentification method, a flexible authentication mechanism used by the application software
-a) Normal Unix authentication pam_unix under PAM (/etc/passwd /etc/shadow /etc/group)
-b) Strong password policy :
-   $ sudo apt-get install libpam-pwquality							installing password quality checking library
-   /etc/pam.d/common-password:
-    -> password requisite pam_pwquality.so retry=3 lcredit =-1 ucredit=-1 dcredit=-1 maxrepeat=3 usercheck=0 difok=7 enforce_for_root
-       // basic checks
-       // dcredit=-1 credit=-1 credit=-1 contain an uppercase letter, a lowercase letter, and a number
-       // maxrepeat=3 pas plus de 3 caracteres consecutifs
-       // usercheck=1 ne doit pas contenir le nom de l'utilisateur
-       // difok=7 <=7 characters that are not part of the former password 
-       // enforce_for_root															apply to the root password
-       // inclass=3 ?
-     -> password [success=2 default=ignore] pam_unix.so obscure sha512 minlen=10
-       // checking users password, default = not permit the user access to a service if their official password is blank
-     -> password required pam_deny.so
-     -> password required pam_permit.so
-   /etc/login.defs PASS_MAX_DAYS 30j										expire tous les 30j, 2j minimum pour modifier, un avertissement 7j
-   /etc/pam.d/passwd ?
-   $ sudo reboot
-
-9) Un utilisateur:
-$ useradd akostrik 							create user
-$ /usr/bin/groupadd akostrik42	create group 
-$ usermod -ahostnaG akostrik		adds the user to the group (пользователю выйти / войти)
-$ /usr/sbin/usermod -a -G akostrik -||-
-$ passwd akostrik 							define password for a user 
-* /etc/passwd 									list of users
-$ groups akostrik 							tester
-$ groups 												tester
-$ id -Gn akostrik 							tester
-* /etc/sudoers.d 								?
-user akostrik iopiopiopiop, groupe akostrik42 et sudo
-user akostrik2 iopiopIOP++1
+9) to connect via ssh
+$ ifconfig																		afficher ip
+VirtualBox / VM Settings / Network / Adapter 1 - ... NAT / Advanced / Port Forwarding / TCP 127.0.0.1 2200 10.0.2.15 4242
+$ ssh akostrik@localhost -p 2200
 
 10) Script SH :
 $ apt-get install sysstat -> necessaire pour l'affichage des CPU, dDisk, autres performances
 $ sudo apt install net-tools
 script /usr/local/bin/monitoring.sh
-$ sudo visudo:
-  akostrik ALL=(ALL) ALL
-  akostrik ALL=(ALL) NOPASSWD: /usr/local/bin/monitoring.sh -> the script execute without sudo pass
-$ sudo reboot // if error, change the Display settings $ drm:vmw_host_log *ERROR* Failed to send host log message
-$ sudo /usr/local/bin/monitoring.sh
-$ sudo crontab -u root -e
-*/10 * * * * /usr/local/bin/monitoring.sh
-*/1 * * * * sleep 30s && /usr/local/bin/monitoring.sh
+$ visudo
+  akostrik ALL=(ALL) NOPASSWD: /usr/local/bin/monitoring.sh 		the script execute without sudo pass
+$ reboot
+$ /usr/local/bin/monitoring.sh
+$ crontab -u root -e
+  */10 * * * * /usr/local/bin/monitoring.sh
 
 11) Turn in a signature.txt to your repositoire
-$ e3r6p1% sha1sum akostrik42.vdi 
+$ sha1sum akostrik42.vdi 
 56a457d6d2d292b630062403b1e18e5c7d52003a  akostrik42.vdi
 
-
-12) Some info:
-$ ls -Z -> liste les attributs étendus (lien avec SELinux)
-$ fdisk
-$ mkfs
-$ ss -tunlp											ports ?
+12) Some info:0
+$ ss -tunlp											ports
 $ netstat -tupln | grep LISTEN	ports
 $ ss -lntu											ports
 $ nmap													ports
 $ lsof -i 											ports
-$ chmod g+w // группе право на запись, владельцу u, остальным o, всем a
-$ chmod o-r // остальным запрещается читать
 
 https://baigal.medium.com/born2beroot-e6e26dfb50ac (!)
 https://tbonelee.tistory.com/m/16
 https://coagul.org/drupal/publication/commandes-avanc%C3%A9es-sous-linux
 https://www.youtube.com/watch?v=OQEdjt38ZJA
-
-iSCSI = Internet Small Computer System Interface
-Протокол для установления взаимодействия и управления системами хранения данных, серверами и клиентами
-Базируется на TCP/IP
-Позволяет двум хостам согласовать соединение и после этого обмениваться командами SCSI с помощью интернет протокола (IP)
