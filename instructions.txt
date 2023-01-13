@@ -2,7 +2,7 @@
   системв / материнская плата / не менее 2 ГБ (2048 гигабайт) оперативной памяти
 	не менее двух ядер ЦП
 
-1) Chose Debian
+2) Chose Debian
 * ELinux doit rester actif 
   SELinux = Security-Enhanced Linux : Architecture de securite
   Definit les controles d'acces pour les applications, processus et fichiers d'un systeme
@@ -29,7 +29,7 @@
   https://www.tecmint.com/difference-between-apt-and-aptitude/
 * 
 
-2) Two partitions chiffrees avec LVM
+3) Two partitions chiffrees avec LVM
 $ lsblk -> shows the partitions
 название устройства : MAJ MIN старший и младший номера устройств : RM 1 съемное : RО 1 только для чтения : диск/уст-во обратной связи/раздел/уст-во LVM
 Первый обнаруженный жёсткий диск называется /dev/sda, второй /dev/sdb, ...
@@ -38,7 +38,7 @@ LVM = logical volume management = provides a method of allocating space on mass-
 partitioning schemes (concatenate, stripe together or otherwise combine partitions into larger virtual partitions 
 that administrators can re-size or move, potentially without interrupting system use)
 
-3) Installer, configurer sudo 
+4) Installer, configurer sudo 
 TTY : requiretty = a non-root code (ex, PHP script) won't be able to directly upgrade its privileges by running sudo
 $ su -												install sudo
 $ apt update
@@ -59,7 +59,7 @@ $ visudo -> akostrik ALL=(ALL) ALL sudoers file
 /var/log/sudo/00/00 														sudo logs
 $ chage -l akostrik															tester
 
-4) Service SSH = Secure Shell sur le port 4242 uniquement
+5) Service SSH = Secure Shell sur le port 4242 uniquement
 Authentification sans mot de passe, avec des cles
 Как бы работаете непосредственно на той машине
 La cle publique sur les systemes auxquels on souhaite authorises l'acces
@@ -71,9 +71,8 @@ $ systemctl status ssh										test
 $ service ssh status											test
 $ grep Port /etc/ssh/sshd_config					test
 
-5) to connect via ssh
+6) to connect via ssh
 VirtualBox / VM Settings / Network / Adapter 1 / Advanced / Port Forwarding
- 
 $ ifconfig 													afficher notre ip
   attached to :
   a) internel network -> enp0s3 inet6 fe80::a00:27ff:fefc:a23f
@@ -88,7 +87,7 @@ $ ssh akostrik@127.0.0.1 -p 4242					test: connect to VM from your host (physica
 // VirtualBox подключение по SSH не работает - по умолчанию на VirtualBox используется подключение к интернету с помощью NAT
 // При таком способе подключения у вас нет возможности подключаться к виртуальной машине из своей реальной операционной системы. В частности, вы не сможете подключиться по SSH
 
-6) Un pare-feu UFW = Uncomplicated Firewall
+7) Un pare-feu UFW = Uncomplicated Firewall
 Le trafic entrant est refuse et le trafic sortant est autorise (reglage)
 $ apt update -y
 $ apt install ufw -y
@@ -150,18 +149,20 @@ user akostrik2 iopiopIOP++1
 10) Script SH :
 $ apt-get install sysstat -> necessaire pour l'affichage des CPU, dDisk, autres performances
 $ sudo apt install net-tools
-* /usr/local/bin/monitoring.sh
+script /usr/local/bin/monitoring.sh
 $ sudo visudo:
   akostrik ALL=(ALL) ALL
   akostrik ALL=(ALL) NOPASSWD: /usr/local/bin/monitoring.sh -> the script execute without sudo pass
 $ sudo reboot // if error, change the Display settings $ drm:vmw_host_log *ERROR* Failed to send host log message
 $ sudo /usr/local/bin/monitoring.sh
 $ sudo crontab -u root -e
-$ sudo crontab -e
 */10 * * * * /usr/local/bin/monitoring.sh
 */1 * * * * sleep 30s && /usr/local/bin/monitoring.sh
 
 11) Turn in a signature.txt to your repositoire
+$ e3r6p1% sha1sum akostrik42.vdi 
+56a457d6d2d292b630062403b1e18e5c7d52003a  akostrik42.vdi
+
 
 12) Some info:
 $ ls -Z -> liste les attributs étendus (lien avec SELinux)
@@ -172,11 +173,10 @@ $ netstat -tupln | grep LISTEN	ports
 $ ss -lntu											ports
 $ nmap													ports
 $ lsof -i 											ports
-$ chmod g+w // группе добавляется право на запись, владельцу u, остальным o, всем a
-$ chmod o-r // остальным запрещается читать файл
+$ chmod g+w // группе право на запись, владельцу u, остальным o, всем a
+$ chmod o-r // остальным запрещается читать
 
-
-https://baigal.medium.com/born2beroot-e6e26dfb50ac
+https://baigal.medium.com/born2beroot-e6e26dfb50ac (!)
 https://tbonelee.tistory.com/m/16
 https://coagul.org/drupal/publication/commandes-avanc%C3%A9es-sous-linux
 https://www.youtube.com/watch?v=OQEdjt38ZJA
