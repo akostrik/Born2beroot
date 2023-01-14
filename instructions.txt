@@ -4,11 +4,12 @@
   The purpose of virtual machines
 
 2) Debian
-* The basic differences between Rocky and Debian
-* Debian:
+$ uname -r 											which OS
+* /etc/os-release
+* Rocky vs Debian, Debian:
   multiple architecture support
   a vasy amount of packages in its default repository
-  easily upgrated
+  easily upgraded
   user-friendly applications and GUI (Graphical User Interface)
 * apt = Advanced Packaging Tool = lower-level package manager, can be used by other higher-level package managers
   command line, no GUI 
@@ -104,6 +105,11 @@ $ sudo apt install openssh-server
 * /etc/ssh/sshd_config Port 4242, PermitRootLogin, PubkeyAuthenticqtion yes
 $ systemctl restart sshd.service							reboot SSH-server
 $ systemctl status ssh												test
+$ lsof -i -P -n																test ports
+$ ss -tunlp																		test ports
+$ netstat -tupln | grep LISTEN								test ports
+$ ss -lntu																		test ports
+$ nmap																				test ports
 
 9) to connect via ssh
 $ ifconfig																		afficher ip
@@ -122,16 +128,11 @@ $ crontab -u root -e
   */10 * * * * /usr/local/bin/monitoring.sh
 
 11) Turn in a signature.txt to your repositoire
+VM / snapshot / take
 $ sha1sum akostrik42.vdi 
 56a457d6d2d292b630062403b1e18e5c7d52003a  akostrik42.vdi
 
-12) Some info:0
-$ ss -tunlp											ports
-$ netstat -tupln | grep LISTEN	ports
-$ ss -lntu											ports
-$ nmap													ports
-$ lsof -i 											ports
-
+12) info:
 https://baigal.medium.com/born2beroot-e6e26dfb50ac (!)
 https://tbonelee.tistory.com/m/16
 https://coagul.org/drupal/publication/commandes-avanc%C3%A9es-sous-linux
