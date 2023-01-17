@@ -5,39 +5,53 @@
 
 2) Debian
 $ uname -r 											which OS
+$ head -n 2 /etc/os-release
 * /etc/os-release
-* Rocky vs Debian, Debian:
-  multiple architecture support
-  a vasy amount of packages in its default repository
-  easily upgraded
-  user-friendly applications and GUI (Graphical User Interface)
-* apt = Advanced Packaging Tool = lower-level package manager, can be used by other higher-level package managers
+* DEBIAN                           | ROCKY = CentOS
+  supports 32 bit                  |
+	apt                              | yum, ...
+	AppArmor                         | SELinux
+	supports exFAT filesystem        |
+	multiple architecture support    |
+	easily upgrated                  |
+	iser-friendly applications       |
+	GUI                              |
+	many packages in def. repository |
+	// Extensible File Allocation Table, Microsoft, optimized for flash memory (USB flash drives, SD cards)
+	// FAT32 file-size limit 4 GB
+	// NTFS is not always feasible due to data-structure overhead
+
+3) apt et aptitude handle installation, removal, search ... of packages
+  https://www.tecmint.com/difference-between-apt-and-aptitude/
+* apt = Advanced Packaging Tool = lower-level package manager
+	used by higher-level package managers
   command line, no GUI 
   finds in /etc/apt/sources.list the package and its dependencies, automatically installs them
   easy control of configurations
 * aptitude = high-level package manager
-  a user interface to the functionality, interactively search for a package, install, remove it
-  Can emulate most of apt-get’s command line arguments
+  user interface
+  interactively search for a package, install, remove it
+  emulate most of apt-get’s command line arguments
   Abstracts low level details, can operate in both text-based interactive UI mode and even in command line non-interactive mode.
-* AppArmor doit rester actif
-  Associer a chaque programme un profil de securite qui restreint acces aux systeme d'exploitations
-  Il est en complement du systeme de controle d'acces Linux en permettant d'utiliser le MAC : Mandatory Access control
-  Permet un mode d'aprentissage
-  Difference avec SELinux : travaille avec les chemins alors que SELinux s'appuie sur l'application d'indicateurs aux fichiers
-  Программный инструмент упреждающей защиты, основанный на политиках (профилях) безопасности - к каким системным ресурсам и с какими привилегиями может получить доступ приложение
-* both handle all kinds of activities on packages (installation, removal, search ...)
-  https://www.tecmint.com/difference-between-apt-and-aptitude/
 
-3) user
-$ useradd akostrik 							create user
-$ /usr/bin/groupadd akostrik42	create group 
-$ /usr/sbin/usermod -a -G akostrik adds the user to the groupо (пользвателю выйти / войти)
-$ passwd akostrik 							define password for a user 
-* /etc/passwd 									test (list of users)
-$ groups akostrik 							test
+4) AppArmor doit rester actif
+  инструмент упреждающей защиты, основанный на политиках безопасности - к каким системным ресурсам и с какими привилегиями может получить доступ приложение
+  Associer a chaque programme un profil de securite qui restreint acces a OS
+  Complete le systeme de controle d'acces Linux en permettant d'utiliser le MAC : Mandatory Access control
+  Permet un mode d'aprentissage
+  Travaille avec les chemins (SELinux s'appuie sur l'application d'indicateurs aux fichiers
+$ aa-status
+
+5) user
+$ useradd akostrik 														create user
+$ /usr/bin/groupadd akostrik42								create group
+$ /usr/sbin/usermod -aG evaluation akostrik 	add the user to the group (пользвателю выйти / войти)
+$ passwd akostrik 														define password for a user 
+* /etc/passwd 																list of users
+$ groups akostrik 														test
 // akostrik iopiopiopiop, akostrik42 et sudo
 
-4) pam = pluggable authentification method
+6) pam = pluggable authentification method
 Strong password policy
 $ sudo apt-get install libpam-pwquality	password quality checking library
 /etc/pam.d/common-password:
@@ -50,23 +64,23 @@ $ sudo apt-get install libpam-pwquality	password quality checking library
   password [success=2 default=ignore] pam_unix.so obscure sha512 minlen=10
   // default = not permit the user access to a service if the password is blank
 /etc/login.defs 
-		PASS_MAX_DAYS 30j										expire tous les 30j, 2j minimum pour modifier, un avertissement 7j
+	PASS_MAX_DAYS 30j										expire tous les 30j, 2j minimum pour modifier, un avertissement 7j
 $ sudo reboot
 $ chage -l akostrik											test
 * the advantages of this password policy
 * the advantages and disadvantages of its implementation
-* Normal Unix authentication /etc/passwd /etc/shadow /etc/group
+* // normal Unix authentication /etc/passwd /etc/shadow /etc/group
 
-4) hostname
+7) hostname
 $ hostname
 $ hostnamectl set-hostname 							change
 $ sudo reboot
 
-5) Two partitions chiffrees avec LVM
+8) Two partitions chiffrees avec LVM
 $ lsblk 																shows the partitions
-LVM = logical volume management : provides a flexible method of allocating space (concatenate, re-size, move partitions)
+LVM = logical volume management : allocating space (concatenate, re-size, move partitions)
 
-6) Installer, configurer sudo 
+9) Installer, configurer sudo 
 $ su -
 $ apt update
 $ apt-get update -y
@@ -83,8 +97,9 @@ $ visudo -> akostrik ALL=(ALL) ALL
   Defaults log_input,log_output
   Defaults requiretty 													mode TTY activé = a non-root code (ex script) aren't able to directly upgrade its privileges by running sudo
 
-7) UFW = Uncomplicated Firewall
+10) UFW = Uncomplicated Firewall
 Le trafic entrant est refuse, le trafic sortant est autorise
+leave only port 4242 open
 $ apt update -y
 $ apt install ufw -y
 * /etc/default/ufw IPV6=yes
@@ -97,10 +112,11 @@ $ ufw status numbered
 $ ufw delete 4 																	delete rule 4
 $ ufw allow ssh
 
-8) SSH = Secure Shell, le port 4242 uniquement
+11) SSH = Secure Shell, le port 4242 uniquement
 Authentification sans mot de passe, avec des cles
 La cle publique sur le serveur, la cle privee, unique pour un utilisateur, sur le client
 Как бы работаете непосредственно на той машине
+SSH service will be running on port 4242 only
 $ sudo apt install openssh-server
 * /etc/ssh/sshd_config Port 4242, PermitRootLogin, PubkeyAuthenticqtion yes
 $ systemctl restart sshd.service							reboot SSH-server
@@ -111,12 +127,12 @@ $ netstat -tupln | grep LISTEN								test ports
 $ ss -lntu																		test ports
 $ nmap																				test ports
 
-9) to connect via ssh
+12) to connect via ssh
 $ ifconfig																		afficher ip
 VirtualBox / VM Settings / Network / Adapter 1 - ... NAT / Advanced / Port Forwarding / TCP 127.0.0.1 2200 10.0.2.15 4242
 $ ssh akostrik@localhost -p 2200
 
-10) Script SH :
+13) Script SH :
 $ apt-get install sysstat -> necessaire pour l'affichage des CPU, dDisk, autres performances
 $ sudo apt install net-tools
 script /usr/local/bin/monitoring.sh
@@ -127,12 +143,46 @@ $ /usr/local/bin/monitoring.sh
 $ crontab -u root -e
   */10 * * * * /usr/local/bin/monitoring.sh
 
-11) Turn in a signature.txt to your repositoire
+14) DHCP = Dynamic Host Configuration Protocol
+* "To complete the bonus part, you have the possibility to set up extra services. In this case, you 
+may open more ports to suit your needs. Of course, the UFW rules has to be adapted accordingly."
+* Discord : Will a confirmé à multiple reprise que les exemples sont pas là pour rien. 
+Et le passage en ip static est important pour découvrir certaines notions
+* Le port 68 correspond au service DHCP
+* les port 67 et 68 sont utilisés par ton client DHCP
+* DHCP permet d'avoir une adresse IP sur un réseau
+Sans DHCP, pas d'IP -> pas de connexion
+On redémarre le serveur dhcp -> IP aura potentiellement changé
+Désactiver DHCP => passer IP en statique => tu as coupé ta VM d'internet
+Laisser le DHCP actif jusqu'au dernier moment et le desactiver avant la correction 
+* pourquoi passer en ip static?
+Les port 67 et 68 sont utilisés par ton client DHCP
+Ce qui te permet de communiquer avec le service DHCP pour avoir une configuration ip
+Si tu desactive ip statique et le dhcp client, tu risque de ne plus avoir de connexion du tou
+il doit y avoir uniquement les port 4242 d'actif
+On ne nous demande pas de gérer le routage du réseau
+Mais pour sécuriser, on peux definir sur le routeur les ip statique associés aux adresses mac
+Avec le DHCP auto, n'importe qui qui as un cable pour se brancher est admis sur le réseau
+
+$ ss -tunlp
+  mettre l'ip statique :
+  /etc/network/interfaces
+    allow-hotplug enp0s3
+    iface enp0s3 inet static
+      address 192.168.100.14/24
+      gateway 192.168.100.1
+      dns-nameservers 192.168.100.11 1.1.1.1
+      dns-domain it-connect.local
+	
+$ dpkg -l | grep ssh
+$ setup-alpine                              configurer le DHCP ?
+
+15) Turn in a signature.txt to your repositoire
 VM / snapshot / take
 $ sha1sum akostrik42.vdi 
-56a457d6d2d292b630062403b1e18e5c7d52003a  akostrik42.vdi
+d3206438967ac89acfe2f6ee82400c0c7b043fdb akostrik42.vdi
 
-12) info:
+16) info:
 https://baigal.medium.com/born2beroot-e6e26dfb50ac (!)
 https://tbonelee.tistory.com/m/16
 https://coagul.org/drupal/publication/commandes-avanc%C3%A9es-sous-linux
