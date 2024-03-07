@@ -8,18 +8,18 @@ $ uname -r 											which OS
 $ head -n 2 /etc/os-release
 * /etc/os-release
 * DEBIAN                           | ROCKY = CentOS
-	apt                              | yum, ...
-	AppArmor                         | SELinux
-	supports exFAT filesystem        |
-	supports 32 bit                  |
-	supports multiple architecture   |
-	easily upgrated                  |
-	many packages default repository |
-	user-friendly applications       |
-	GUI                              | GUI cmplicated
-	// exFAT Extensible File Allocation Table, Microsoft, optimized for flash memory (USB flash drives, SD cards)
-	// FAT32 file-size limit 4 GB
-	// NTFS is not always feasible due to data-structure overhead
+  apt                              | yum, ...
+  AppArmor                         | SELinux
+  supports exFAT filesystem        |
+  supports 32 bit                  |
+  supports multiple architecture   |
+  easily upgrated                  |
+  many packages default repository |
+  user-friendly applications       |
+  GUI                              | GUI cmplicated
+// exFAT Extensible File Allocation Table, Microsoft, optimized for flash memory (USB flash drives, SD cards)
+// FAT32 file-size limit 4 GB
+// NTFS is not always feasible due to data-structure overhead
 
 3) apt et aptitude handle installation, removal, search ... of packages
   https://www.tecmint.com/difference-between-apt-and-aptitude/
